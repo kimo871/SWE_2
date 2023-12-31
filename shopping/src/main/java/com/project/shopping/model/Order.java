@@ -1,7 +1,10 @@
 package com.project.shopping.model;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 import java.util.*;
 import java.time.LocalDateTime;
+//@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 
 abstract public class Order {
 

@@ -70,7 +70,7 @@ public class OrderService {
             // remove from customer balance
             for (Order simpleOrder : ((CompoundOrder) order).getOrders()) {
                 double price = simpleOrder.calculatePrice();
-                customersService.updateCustomerBalance(order.getCustomerId() , price);
+                customersService.updateCustomerBalance(simpleOrder.getCustomerId() , price);
             }
         }
         else{

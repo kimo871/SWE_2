@@ -38,7 +38,7 @@ public class ShippingController {
         return shippingService.getShipmentDetails(shipmentId);
     }
 
-    @D("/cancel/{shipmentId}")
+    @DeleteMapping("/cancel/{shipmentId}")
     public ResponseEntity<String> cancelShipment(@PathVariable int shipmentId) {
         return shippingService.cancelShipment(shipmentId);
     }

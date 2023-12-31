@@ -3,15 +3,15 @@ package com.project.shopping.model;
 import java.util.*;
 
 public class CompoundOrder extends Order {
-    private ArrayList<Order> orders = new ArrayList<Order>();
+    private ArrayList<SimpleOrder> orders = new ArrayList<SimpleOrder>();
 
 
-    public ArrayList<Order> getOrders() {
+    public ArrayList<SimpleOrder> getOrders() {
         return orders;
     }
     public CompoundOrder(){}
 
-    public CompoundOrder(ArrayList<Order> orders) {
+    public CompoundOrder(ArrayList<SimpleOrder> orders) {
         this.orders = orders;
     }
 
