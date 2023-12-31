@@ -1,0 +1,54 @@
+package com.project.shopping.controller;
+
+
+import com.project.shopping.model.Shipping;
+import com.project.shopping.service.OrderService;
+import com.project.shopping.service.ShipmentService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/ship")
+public class ShippingController {
+    public ShipmentService shippingService;
+    public OrderService orderService;
+
+    @Autowired
+    public ShippingController(ShipmentService serviceA) {
+        this.shippingService = serviceA;
+    }
+    @PostMapping("/order")
+    public Shipping createShipment(@RequestBody Shipping ship) {
+        // Create a shipment for the provided order and shipping address
+        //Shipping newShipment = new Shipping(order, shippingAddress);
+       Shipping res =  shippingService.process_shipment(ship);
+        //orderService.getOrderById(ship.getOrderId()));
+        // Process the shipment (calculate fees, deduct from customer accounts, etc.)
+        return shippingService.process_shipment(ship);
+    }
+
+
+
+    @PutMapping("/{shipmentId}/complete")
+    public ResponseEntity<String> completeShipment(@PathVariable int shipmentId) {
+         Shipping S = shippingService.completeShipment(shipmentId);
+       if(S!=null) {
+           shippingService.deductFees(S);
+           return  ResponseEntity.status(200).body("Order Shipped Successfully");
+       }
+       return  ResponseEntity.status(400).body("Not Enough Balance");
+    }
+
+
+    @GetMapping("/{shipmentId}")
+    public Shipping getShipmentDetails(@PathVariable int shipmentId) {
+        return shippingService.getShipmentDetails(shipmentId);
+    }
+
+    @GetMapping("/cancel/{shipmentId}")
+    public ResponseEntity<String> cancelShipment(@PathVariable int shipmentId) {
+        return shippingService.cancelShipment(shipmentId);
+    }
+
+}
