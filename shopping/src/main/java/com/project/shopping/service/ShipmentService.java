@@ -30,7 +30,7 @@ public class ShipmentService {
         Order res = orders_service.getOrderById(S.getOrderId());
 
         if(res!=null){
-            shipments_db.addProduct(S);
+            shipments_db.addShipment(S);
             messageService.createMessage(S , customersService.getCustomer(res.getCustomerId()));
             if (!deductFees(S) ){
                 return "Shipment placed successfully" ;

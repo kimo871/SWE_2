@@ -26,7 +26,7 @@ public class Shipments_db {
         return instance;
     }
 
-    public boolean addProduct(Shipping new_s){
+    public boolean addShipment(Shipping new_s){
         shippings.add(new_s);
         return true;
     }
