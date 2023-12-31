@@ -5,10 +5,21 @@ public class Product {
     private double price;
     private int quantity, serialNumber;
     private static int counter = 0;
+    private String CategoryName;
+
+    public String getCategoryName() {
+        return CategoryName;
+    }
+
+    public void setCategoryName(String categoryID) {
+        CategoryName = categoryID;
+    }
 
     public Product(){
         serialNumber = counter++;
     }
+
+
 
     public String getName(){
          return name;

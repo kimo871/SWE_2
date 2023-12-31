@@ -4,13 +4,14 @@ import java.util.*;
 
 public class CompoundOrder extends Order {
     private ArrayList<Order> orders = new ArrayList<Order>();
-    Double price ;
+
 
     public ArrayList<Order> getOrders() {
         return orders;
     }
 
     public double calculatePrice() {
+        price=0.0;
         for (Order order : orders) {
             price += order.calculatePrice();
         }

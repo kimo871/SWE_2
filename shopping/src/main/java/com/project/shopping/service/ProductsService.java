@@ -4,6 +4,7 @@ import com.project.shopping.model.Product;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Array;
@@ -19,8 +20,9 @@ public class ProductsService {
     }
     private JwtAuthentication jwtService = JwtAuthentication.getInstance();
 
-    public void addProduct(Product product){
+    public ResponseEntity<String> addProduct(Product product){
         productsDb.addProduct(product);
+        return ResponseEntity.ok("Product has been added");
     }
 
     public Product getProductBySerialNumber(int serialNumber){

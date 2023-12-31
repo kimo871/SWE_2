@@ -21,16 +21,19 @@ public class OrderService {
     private MessageService messageService ;
     private JwtAuthentication jwtService = JwtAuthentication.getInstance();
 
+
+
     public OrderService(){
         ordersDb = Orders_db.getInstance() ;
         productsService = new ProductsService() ;
         shipments_db = Shipments_db.getInstance();
         customersService = new CustomersService();
-        messageService = new MessageService() ;
+        messageService = MessageService.getInstance() ;
     }
     public String addOrder(Order order){
+        ArrayList <Product>products_copy = new ArrayList<>(productsService.getProducts());
         ArrayList<Product>order_products = order.getProducts() ;
-        ArrayList <Product>products = new ArrayList<>(productsService.getProducts());
+
 //        HashMap<Product , Integer> uniqueProducts = new HashMap<>() ;
 //
 //        for(Product p :products){
@@ -39,24 +42,14 @@ public class OrderService {
 //                else
 //                    uniqueProducts.put(p , p.getQuantity()) ;
 
-
-          for(Product p : order_products){
-              int index = products.indexOf(p);
-              System.out.println(index);
-              if(index!=-1 ){
-                  Product choosenProduct = products.get(index);
-                  if(p.getQuantity() > choosenProduct.getQuantity()) return p.getName()+ " Quantity Avilable only "+p.getQuantity();
-                  else choosenProduct.setQuantity(choosenProduct.getQuantity()-p.getQuantity());
-              }
-              else return p.getName() + " is Not Avialbale in our store !";
-          }
-
         if(order instanceof CompoundOrder){
             for (Order simpleOrder : ((CompoundOrder) order).getOrders()) {
+                String res = checkProducts(order.getProducts(),products_copy);
+                if(res!="") return res;
                 double price = simpleOrder.calculatePrice();
-                if(customersService.getCustomerBalance(simpleOrder.getCustomerId()) < price){
-                    return "not sufficient balance";
-                }
+                double customerBalance = customersService.getCustomerBalance(simpleOrder.getCustomerId());
+                String res_cstmr = checkDeduction(customerBalance ,price );
+                if(res_cstmr!="")return res_cstmr;
             }
             for (Order simpleOrder : ((CompoundOrder) order).getOrders()) {
                 double price = simpleOrder.calculatePrice();
@@ -64,19 +57,46 @@ public class OrderService {
             }
 
         } else{
+            String res = checkProducts(order.getProducts(),products_copy);
+            if(res!="")return res;
             double price = order.calculatePrice();
-            if(customersService.getCustomerBalance(order.getCustomerId()) < price){
-                return "not sufficient balance";
-            }
+            double customerBalance = customersService.getCustomerBalance(order.getCustomerId());
+            String res_cstmr = checkDeduction(customerBalance ,price );
+            if(res_cstmr!="")return res_cstmr;
             customersService.updateCustomerBalance(order.getCustomerId() , price);
         }
 
         ordersDb.addOrder(order);
-        //messageService.createMessage(order , customersService.getCustomer(order.getCustomerId()));
-        // donot forget to update quantity
-        productsService.saveNew(products);
+        messageService.createMessage(order , customersService.getCustomer(order.getCustomerId()));
+        // do not forget to update quantity
+        productsService.saveNew(products_copy);
         return "";
 
+    }
+
+    public String checkProducts(ArrayList<Product> order_products,ArrayList<Product> products_copy){
+        for(Product p : order_products){
+            Product choosenProduct =  null;
+            for( Product s : products_copy ){
+                if(p.getSerialNumber() == s.getSerialNumber()){
+                    choosenProduct =  s;
+                }
+            }
+            if(choosenProduct!=null){
+                // Product chosen Product = products.get(index);
+                if(p.getQuantity() > choosenProduct.getQuantity()) return choosenProduct.getName()+ " Quantity Available only "+p.getQuantity();
+                else {choosenProduct.setQuantity(choosenProduct.getQuantity()-p.getQuantity());}
+            }
+            else return p.getName() + " is Not Available in our store !";
+        }
+        return "";
+    }
+
+    public String checkDeduction(double customerBalance , double price){
+        if(customerBalance < price){
+            return "not sufficient balance";
+        }
+        return "";
     }
 
     public ResponseEntity<String> cancelOrder(int orderId) {

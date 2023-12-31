@@ -10,9 +10,16 @@ import java.util.*;
 public class MessageService {
     Queue<Message>messageQueue ;
     Messages_db repositry ;
-    public MessageService(){
+    static MessageService instance ;
+    private MessageService(){
         messageQueue = new LinkedList<>();
         repositry = Messages_db.getInstance();
+    }
+
+    public static MessageService getInstance(){
+        if (instance == null)
+            instance = new MessageService() ;
+        return instance ;
     }
 
     public void createMessage(Order order , Customer customer){
@@ -34,6 +41,12 @@ public class MessageService {
             repositry.updateTemplate(1);
             messageQueue.add(message) ;
             repositry.addMessage(message);
+        }
+    }
+    public void popMessage(){
+        if (!messageQueue.isEmpty()) {
+            messageQueue.poll();
+            System.out.println("Message popped");
         }
     }
 

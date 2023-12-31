@@ -1,6 +1,8 @@
 package com.project.shopping.controller;
 
-import com.project.shopping.model.Customer;
+import com.project.shopping.model.*;
+import com.project.shopping.model.EmailChannel;
+import com.project.shopping.model.SMSChannel;
 import com.project.shopping.service.CustomersService;
 import com.project.shopping.service.Response;
 import org.springframework.http.ResponseEntity;
@@ -38,7 +40,14 @@ public class CustomerController {
     //Registeration Process
     @PostMapping("/add")
     public ResponseEntity<Response> createCustomer(@RequestBody Customer customer) {
-        customerService.addCustomer(customer);
+        customer.setMyChannels(new ArrayList<IChannel>()) ;
+        if(customer.getEmail() != null){
+            customer.addChannel(new EmailChannel(customer.getEmail()));
+        }
+        if (customer.getPhone() != null){
+            customer.addChannel(new SMSChannel(customer.getPhone()));
+        }
+
 
         return  ResponseEntity.status(200).body(new Response("token is "+customerService.addCustomer(customer)));
     }

@@ -21,33 +21,35 @@ public class OrderController {
     }
 
     @PostMapping("/simpleOrder/add")
-    public ResponseEntity<Response> addOrder(@RequestHeader("Authorization") String authorizationHeader ,@RequestBody SimpleOrder order){
-        System.out.println(authorizationHeader);
-        String token="";
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-             token = authorizationHeader.replace("Bearer ", "").trim();
-            System.out.println("Extracted Token: " + token); // Check the extracted token
+    public ResponseEntity<Response> addOrder(@RequestBody SimpleOrder order){
+        //System.out.println(authorizationHeader);
+        //String token="";
+        //if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            // token = authorizationHeader.replace("Bearer ", "").trim();
+          //  System.out.println("Extracted Token: " + token); // Check the extracted token
             // Further processing or validation of the token
             // Extract the JWT token from the header
-        }
+       // }
 
-        if(jwtService.validateToken(token)){
+        //if(jwtService.validateToken(token)){
             String res= orderService.addOrder(order);
             System.out.println(res);
             if(!res.equals(""))return ResponseEntity.status(200).body(new Response(res));
             return ResponseEntity.status(200).body(new Response("Order Added Successfully"));
-        }
-        else  return ResponseEntity.status(401).body(new Response("Token Invalid"));
+      //  }
+        //else  return ResponseEntity.status(401).body(new Response("Token Invalid"));
     }
 
     @PostMapping("/compoundOrder/add")
-    public ResponseEntity<Response> addOrder(@RequestHeader("Authorization") String authorizationHeader , @RequestBody CompoundOrder order){
-        String token = authorizationHeader.replace("Bearer ", ""); // Extract the JWT token from the header
-        if(jwtService.validateToken(token)){
-            orderService.addOrder(order);
+    //@RequestHeader("Authorization") String authorizationHeader ,
+    public ResponseEntity<Response> addOrder( @RequestBody CompoundOrder order){
+        //String token = authorizationHeader.replace("Bearer ", ""); // Extract the JWT token from the header
+       // if(jwtService.validateToken(token)){
+            String res= orderService.addOrder(order);
+            if(!res.equals(""))return ResponseEntity.status(200).body(new Response(res));
             return ResponseEntity.status(200).body(new Response("Order Added Successfully"));
-        }
-        else  return ResponseEntity.status(401).body(new Response("Token Invalid"));
+       // }
+        //else  return ResponseEntity.status(401).body(new Response("Token Invalid"));
     }
 
     @GetMapping("/{id}")

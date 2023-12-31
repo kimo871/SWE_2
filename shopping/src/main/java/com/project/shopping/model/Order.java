@@ -7,6 +7,9 @@ abstract public class Order {
 
     private int customerId;
     private int ID;
+
+    protected double price;
+
     private LocalDateTime startTime;
 
     private static int counter = 0;
@@ -14,6 +17,15 @@ abstract public class Order {
     public Order(){
         ID = counter++;
         startTime = LocalDateTime.now();
+        setPrice(calculatePrice());
+    }
+
+    private void setPrice(double price) {
+        this.price = price;
+    }
+
+    public double getPrice() {
+        return price;
     }
 
     public LocalDateTime getStartTime() { return startTime; }
@@ -26,6 +38,10 @@ abstract public class Order {
 
     public int getCustomerId() {
         return customerId;
+    }
+
+    public void setCustomerId(int customerId) {
+        this.customerId = customerId;
     }
 }
 

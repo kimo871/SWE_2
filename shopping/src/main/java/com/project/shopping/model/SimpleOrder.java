@@ -4,17 +4,14 @@ import java.util.ArrayList;
 
 public class SimpleOrder extends Order {
     private ArrayList<Product> products;
-    private double price;
 
     public ArrayList<Product> getProducts() { return products; }
 
-    public void setPrice(double price) { this.price = price; }
-
-    public double getPrice() { return price; }
 
     public double calculatePrice(){
+        price=0;
         for(Product p : products){
-            price+=p.getPrice();
+            price+=(p.getPrice()*p.getQuantity());
         }
         return price;
     }

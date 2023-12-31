@@ -51,5 +51,12 @@ public class Messages_db {
             templatesCounter[oderShipmentMessage]++;
     }
 
+    public HashMap<String,Integer> getPhonesNotified(){
+        return phoneNumber;
+    }
+
+    public HashMap<String,Integer> getEmailNotified(){
+        return emailAddress;
+    }
 
 }

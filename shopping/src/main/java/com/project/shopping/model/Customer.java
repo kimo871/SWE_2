@@ -56,4 +56,7 @@ public class Customer{
     public void setMyChannels(ArrayList<IChannel> myChannels) {
         this.myChannels = myChannels;
     }
+    public void addChannel(IChannel channel){
+        this.myChannels.add(channel) ;
+    }
 }

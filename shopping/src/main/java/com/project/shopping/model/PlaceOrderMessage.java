@@ -20,7 +20,7 @@ public class PlaceOrderMessage implements IMessageTemplate{
             message += P.getName() + P.getQuantity() + (P.getQuantity() * P.getPrice()) + "\n";
         }
         message += "Final Price:" + order.calculatePrice() + "\n";
-        message += "Hope you enjoy the products yabn Elsh";
+        message += "Hope you enjoy the products. Thanks for using our store";
         return message;
     }
 }
