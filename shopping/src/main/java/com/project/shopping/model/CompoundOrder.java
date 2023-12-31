@@ -9,6 +9,12 @@ public class CompoundOrder extends Order {
     public ArrayList<Order> getOrders() {
         return orders;
     }
+    public CompoundOrder(){}
+
+    public CompoundOrder(ArrayList<Order> orders) {
+        this.orders = orders;
+        setPrice(calculatePrice());
+    }
 
     public double calculatePrice() {
         price=0.0;

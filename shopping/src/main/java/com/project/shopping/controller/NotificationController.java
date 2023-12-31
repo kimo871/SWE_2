@@ -29,7 +29,7 @@ public class NotificationController {
         return messageService.getMessageQueue() ;
     }
 
-    @Scheduled(cron = "0/5 * * * * *") // Cron expression for running every 5 secs
+    @Scheduled(cron = "0/30 * * * * *") // Cron expression for running every 5 secs
     public void execute() {
         messageService.popMessage();
     }

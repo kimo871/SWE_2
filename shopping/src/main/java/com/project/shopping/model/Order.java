@@ -17,10 +17,9 @@ abstract public class Order {
     public Order(){
         ID = counter++;
         startTime = LocalDateTime.now();
-        setPrice(calculatePrice());
     }
 
-    private void setPrice(double price) {
+    protected void setPrice(double price) {
         this.price = price;
     }
 
