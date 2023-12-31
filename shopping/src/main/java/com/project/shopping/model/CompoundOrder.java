@@ -13,7 +13,6 @@ public class CompoundOrder extends Order {
 
     public CompoundOrder(ArrayList<Order> orders) {
         this.orders = orders;
-        setPrice(calculatePrice());
     }
 
     public double calculatePrice() {
@@ -21,6 +20,7 @@ public class CompoundOrder extends Order {
         for (Order order : orders) {
             price += order.calculatePrice();
         }
+
         return price;
     }
 

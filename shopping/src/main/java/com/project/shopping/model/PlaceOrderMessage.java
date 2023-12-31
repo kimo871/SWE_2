@@ -17,10 +17,17 @@ public class PlaceOrderMessage implements IMessageTemplate{
         message = String.format("Hello %s, your Order %d Created successfully\n Order Details", customer.getName(), order.getID());
         ArrayList<Product> products = order.getProducts();
         for (Product P : products) {
-            message += P.getName() + P.getQuantity() + (P.getQuantity() * P.getPrice()) + "\n";
+            message += "Product Name:"+P.getName()+ ", Quantity:"+ P.getQuantity()  + "\n";
         }
         message += "Final Price:" + order.calculatePrice() + "\n";
-        message += "Hope you enjoy the products. Thanks for using our store";
+        message += "Hope you enjoy the products, Thanks for using our store";
         return message;
     }
+    public String getTemplate(){
+        return "Hello {CustomerName}, Your order {orderID} Created successfully" +
+                "order Details: Product Name:{ProductName} , Quantity:{Quantity} \n " +
+                "Final Price: {Price}" +
+                "Hope you enjoy the products, Thanks for using our store";
+    }
+
 }

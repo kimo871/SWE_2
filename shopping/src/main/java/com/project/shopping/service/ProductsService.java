@@ -44,4 +44,8 @@ public class ProductsService {
         return productsDb.getProducts();
     }
 
+    public void updateProductQuantity(int productId , int quantity){
+        productsDb.removeProduct(productId , quantity);
+    }
+
 }

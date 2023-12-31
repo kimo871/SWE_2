@@ -59,4 +59,7 @@ public class Messages_db {
         return emailAddress;
     }
 
+    public int[] getTemplatesCounter() {
+        return templatesCounter;
+    }
 }

@@ -9,7 +9,6 @@ public class SimpleOrder extends Order {
     SimpleOrder() {}
     public SimpleOrder(ArrayList<Product> products) {
         this.products = products;
-        super.setPrice(calculatePrice());
     }
     public double calculatePrice(){
         price=0;

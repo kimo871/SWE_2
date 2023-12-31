@@ -1,6 +1,8 @@
 package com.project.shopping.service;
 
 import com.project.shopping.Repositories.Messages_db;
+import com.project.shopping.model.OrderShipmentMessage;
+import com.project.shopping.model.PlaceOrderMessage;
 
 import java.lang.reflect.Array;
 import java.util.HashMap;
@@ -31,5 +33,18 @@ public class MessageStatistics {
 
     public String MostNotifiedEmail() {
         return getMaxInHashMap(MessageDB.getEmailNotified());
+    }
+
+    public String MaxTemplateUsed() {
+        int[] counter = MessageDB.getTemplatesCounter();
+        if (counter[0] > counter[1]) {
+            PlaceOrderMessage placeOrderMessage = new PlaceOrderMessage();
+            return placeOrderMessage.getTemplate();
+        } else if (counter[0] < counter[1]) {
+            OrderShipmentMessage OrderShipment = new OrderShipmentMessage();
+            return OrderShipment.getTemplate();
+        } else {
+            return "BOTH EQUAL";
+        }
     }
 }

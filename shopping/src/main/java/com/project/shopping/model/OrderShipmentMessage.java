@@ -19,4 +19,9 @@ public class OrderShipmentMessage implements IMessageTemplate {
         message += "Estimated Delivery in 2 hours";
         return message;
     }
+    public String getTemplate() {
+        return "Hello {CustomerName}, Your order {orderID} is on shipping now" +
+                "Shipping fees: {Fees}\n " +
+                "Estimated Delivery in 2 hours";
+    }
 }

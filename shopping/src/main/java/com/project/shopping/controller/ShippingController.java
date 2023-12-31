@@ -19,25 +19,17 @@ public class ShippingController {
         this.shippingService = serviceA;
     }
     @PostMapping("/order")
-    public Shipping createShipment(@RequestBody Shipping ship) {
+    public ResponseEntity<String> createShipment(@RequestBody Shipping ship) {
         // Create a shipment for the provided order and shipping address
         //Shipping newShipment = new Shipping(order, shippingAddress);
-       Shipping res =  shippingService.process_shipment(ship);
         //orderService.getOrderById(ship.getOrderId()));
         // Process the shipment (calculate fees, deduct from customer accounts, etc.)
-        return shippingService.process_shipment(ship);
-    }
+        String response = shippingService.process_shipment(ship);
+        if (response != null) {
+            return  ResponseEntity.status(200).body("Order Shipped Successfully");
+        }
+        return  ResponseEntity.status(400).body("Not Enough Balance");
 
-
-
-    @PutMapping("/{shipmentId}/complete")
-    public ResponseEntity<String> completeShipment(@PathVariable int shipmentId) {
-         Shipping S = shippingService.completeShipment(shipmentId);
-       if(S!=null) {
-           shippingService.deductFees(S);
-           return  ResponseEntity.status(200).body("Order Shipped Successfully");
-       }
-       return  ResponseEntity.status(400).body("Not Enough Balance");
     }
 
 
@@ -46,7 +38,7 @@ public class ShippingController {
         return shippingService.getShipmentDetails(shipmentId);
     }
 
-    @GetMapping("/cancel/{shipmentId}")
+    @D("/cancel/{shipmentId}")
     public ResponseEntity<String> cancelShipment(@PathVariable int shipmentId) {
         return shippingService.cancelShipment(shipmentId);
     }

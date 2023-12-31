@@ -35,8 +35,14 @@ public class Products_db {
         products = new_state;
     }
 
-
     public ArrayList<Product> getProducts(){
         return products;
+    }
+
+    public void removeProduct(int id , int quantityRemoved) {
+        for (Product p : products) {
+            if (p.getSerialNumber() == id)
+                p.setQuantity(p.getQuantity() - quantityRemoved);
+        }
     }
 }

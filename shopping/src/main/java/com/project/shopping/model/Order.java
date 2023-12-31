@@ -17,6 +17,7 @@ abstract public class Order {
     public Order(){
         ID = counter++;
         startTime = LocalDateTime.now();
+        price = -1 ;
     }
 
     protected void setPrice(double price) {
@@ -24,6 +25,8 @@ abstract public class Order {
     }
 
     public double getPrice() {
+        if (price == -1)
+            price = calculatePrice() ;
         return price;
     }
 

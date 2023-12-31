@@ -44,4 +44,9 @@ public class NotificationController {
         return messageStatistics.MostNotifiedEmail();
     }
 
+    @GetMapping("/mostTemplateUsed")
+    public String getMostTemplateUsed() {
+        return messageStatistics.MaxTemplateUsed();
+    }
+
 }

@@ -53,4 +53,12 @@ public class Customers_db {
             }
         }
     }
+
+    public void refund(int ID, Double amount) {
+        for (Customer c : Customers) {
+            if (c.getID() == ID) {
+                c.setBalance(c.getBalance() + amount);
+            }
+        }
+    }
 };

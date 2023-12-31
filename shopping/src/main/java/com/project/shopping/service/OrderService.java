@@ -30,43 +30,67 @@ public class OrderService {
         customersService = new CustomersService();
         messageService = MessageService.getInstance() ;
     }
-    public String addOrder(Order order){
-        ArrayList <Product>products_copy = new ArrayList<>(productsService.getProducts());
-        ArrayList<Product>order_products = order.getProducts() ;
+    public String addOrder(Order order) {
+        // get Prices
+        for (Product product : order.getProducts()) {
+            product.setPrice(productsService.getProductBySerialNumber(product.getSerialNumber()).getPrice());
+        }
 
-//        HashMap<Product , Integer> uniqueProducts = new HashMap<>() ;
-//
-//        for(Product p :products){
-//                if (uniqueProducts.containsKey(p))
-//                    uniqueProducts.put(p , uniqueProducts.get(p) + p.getQuantity());
-//                else
-//                    uniqueProducts.put(p , p.getQuantity()) ;
+        ArrayList<Product> products_copy = new ArrayList<>(productsService.getProducts());
+        ArrayList<Product> order_products = order.getProducts();
+
+        // copy products into hash map
+        HashMap<Product , Integer> uniqueProducts = new HashMap<>() ;
+
+        for(Product p :order_products){
+                if (uniqueProducts.containsKey(p))
+                    uniqueProducts.put(p , uniqueProducts.get(p) + p.getQuantity());
+                else
+                    uniqueProducts.put(p , p.getQuantity()) ;
+        }
+
+        // check products in store
+        for (Map.Entry<Product , Integer> entry : uniqueProducts.entrySet()) {
+            int pID = entry.getKey().getSerialNumber();
+            if (entry.getValue() > productsService.getAvailableQuantity(pID))
+                return entry.getKey().getName() + " is Not Available in our store !" ;
+        }
+
 
         if(order instanceof CompoundOrder){
+            // check customers balance
             for (Order simpleOrder : ((CompoundOrder) order).getOrders()) {
-                String res = checkProducts(order.getProducts(),products_copy);
-                if(res!="") return res;
+
                 double price = simpleOrder.calculatePrice();
                 double customerBalance = customersService.getCustomerBalance(simpleOrder.getCustomerId());
-                String res_cstmr = checkDeduction(customerBalance ,price );
-                if(res_cstmr!="")return res_cstmr;
+                if (customerBalance <price)
+                    return "not sufficient balance" ;
+
             }
+            // remove from customer balance
             for (Order simpleOrder : ((CompoundOrder) order).getOrders()) {
                 double price = simpleOrder.calculatePrice();
                 customersService.updateCustomerBalance(order.getCustomerId() , price);
             }
-
-        } else{
-            String res = checkProducts(order.getProducts(),products_copy);
-            if(res!="")return res;
+        }
+        else{
+            // check customer balance
             double price = order.calculatePrice();
             double customerBalance = customersService.getCustomerBalance(order.getCustomerId());
-            String res_cstmr = checkDeduction(customerBalance ,price );
-            if(res_cstmr!="")return res_cstmr;
+            if(customerBalance < price)
+                return "not sufficient balance" ;
+            // remove from customer balance
             customersService.updateCustomerBalance(order.getCustomerId() , price);
         }
 
+        // update our store
+        for (Map.Entry<Product , Integer> entry : uniqueProducts.entrySet()) {
+            int pID = entry.getKey().getSerialNumber();
+            productsService.updateProductQuantity(pID , entry.getValue()); ;
+        }
+
         ordersDb.addOrder(order);
+        // send notification
         messageService.createMessage(order , customersService.getCustomer(order.getCustomerId()));
         // do not forget to update quantity
         productsService.saveNew(products_copy);
@@ -74,32 +98,7 @@ public class OrderService {
 
     }
 
-    public String checkProducts(ArrayList<Product> order_products,ArrayList<Product> products_copy){
-        for(Product p : order_products){
-            Product choosenProduct =  null;
-            for( Product s : products_copy ){
-                if(p.getSerialNumber() == s.getSerialNumber()){
-                    choosenProduct =  s;
-                }
-            }
-            if(choosenProduct!=null){
-                // Product chosen Product = products.get(index);
-                if(p.getQuantity() > choosenProduct.getQuantity()) return choosenProduct.getName()+ " Quantity Available only "+p.getQuantity();
-                else {choosenProduct.setQuantity(choosenProduct.getQuantity()-p.getQuantity());}
-            }
-            else return p.getName() + " is Not Available in our store !";
-        }
-        return "";
-    }
-
-    public String checkDeduction(double customerBalance , double price){
-        if(customerBalance < price){
-            return "not sufficient balance";
-        }
-        return "";
-    }
-
-    public ResponseEntity<String> cancelOrder(int orderId) {
+    public String cancelOrder(int orderId) {
         int idx = -1;
         ArrayList<Shipping> shippings = shipments_db.getShippings();
         ArrayList<Order> orders = ordersDb.getOrders();
@@ -115,6 +114,9 @@ public class OrderService {
             }
         }
         if (idx > -1) {
+            double fees = shippings.get(idx).getShippingFees();
+            Order order = ordersDb.getOrderById(orderId) ;
+            customersService.refundCustomerBalance( order.getCustomerId(),fees );
             shippings.remove(idx);
             shipments_db.setShippings(shippings);
         }
@@ -126,21 +128,27 @@ public class OrderService {
                 if (duration.toSeconds() < 30) {
                     idx = i;
                 } else {
-                    return ResponseEntity.status(400).body("order can't be deleted 30 seconds passed");
+                    return "order can't be deleted 30 seconds passed";
                 }
                 break;
             }
         }
         if (idx > -1) {
+            double order_price = orders.get(idx).getPrice();
+            customersService.refundCustomerBalance(ordersDb.getOrderById(orderId).getCustomerId() ,order_price );
             orders.remove(idx);
             ordersDb.setOrders(orders);
-            return ResponseEntity.ok("The order has been deleted");
+            return "The order has been deleted";
         }
-        return ResponseEntity.status(400).body("order is not found");
+        return "";
     }
 
     public Order getOrderById(int id){
         return ordersDb.getOrderById(id);
+    }
+
+    public ArrayList<Order> getOrders(){
+        return ordersDb.getOrders();
     }
 
 }

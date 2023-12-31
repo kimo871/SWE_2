@@ -50,4 +50,8 @@ public class CustomersService {
     public void updateCustomerBalance(int ID ,Double amount) {
         customers_db.updateCustomerBalance(ID , amount);
     }
+    public void refundCustomerBalance(int ID ,Double amount) {
+        customers_db.refund(ID , amount);
+    }
+    public void restoreCustomerBalance(int ID,Double amount){customers_db.refund(ID,amount);}
 }

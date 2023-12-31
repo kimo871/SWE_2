@@ -8,6 +8,8 @@ import com.project.shopping.service.OrderService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity; // For ResponseEntity class
 
+import java.util.ArrayList;
+
 
 @RestController
 @RequestMapping("/order")
@@ -32,6 +34,7 @@ public class OrderController {
        // }
 
         //if(jwtService.validateToken(token)){
+
             String res= orderService.addOrder(order);
             System.out.println(res);
             if(!res.equals(""))return ResponseEntity.status(200).body(new Response(res));
@@ -57,9 +60,28 @@ public class OrderController {
         return orderService.getOrderById(orderId);
     }
 
-    @GetMapping("/cancel/{orderId}")
+    @DeleteMapping("/cancel/{orderId}")
     public ResponseEntity<String> cancelOrder(@PathVariable("orderId") int orderId) {
-        return orderService.cancelOrder(orderId);
+        Order r = orderService.getOrderById(orderId);
+        if (r instanceof SimpleOrder) {
+            String res = orderService.cancelOrder(orderId);
+            if (res != "") {
+                return ResponseEntity.status(200).body(res);
+            } else return ResponseEntity.status(400).body("not found");
+        } else {
+            for (Order simpleOrder : ((CompoundOrder) r).getOrders()) {
+                String res = orderService.cancelOrder(simpleOrder.getID());
+                if (res == "") {
+                    return ResponseEntity.status(400).body("not found");
+                } else {
+                    continue;
+                }
+            }
+            return ResponseEntity.status(200).body("Canceled All Orders");
+        }
     }
-
+    @GetMapping("/get")
+    public ArrayList<Order> getOrders() {
+        return orderService.getOrders();
+    }
 }
